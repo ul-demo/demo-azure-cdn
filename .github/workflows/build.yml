@@ -1,0 +1,55 @@
+name: Build
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Pour avoir accès à des variables plus simples comme GITHUB_REF_SLUG_URL
+      - name: GitHub Slug Action
+        uses: rlespinasse/github-slug-action@3.1.0
+
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v1
+        with:
+          node-version: 12.x
+
+      - name: install
+        run: npm ci
+
+      - name: build
+        run: npm run build
+
+      - name: test
+        run: npm run test:unit
+
+      - name: Publication rapports de tests
+        uses: LanceMcCarthy/Action-AzureBlobUpload@v1.7.1
+        if: ${{ success() || failure() }}
+        with:
+          connection_string: ${{ secrets.REPORTS_ST_CONNECTION_STRING }}
+          container_name: $web
+          source_folder: reports/
+          destination_folder: ${{ github.repository }}/${{ env.GITHUB_REF_SLUG_URL }}
+
+      #- name: Deploy
+      #  uses: tibor19/static-website-deploy@v1
+      #  with:
+      #    # Connection String of the Azure Storage Container
+      #    connection-string: ${{ secrets.DEPLOY_STSTORAGECONNECTIONSTRING }}
+      #    folder: dist
+      #    blob-container-name: $web
+      #    # Index file for the static website
+      #    index-file: index.html
+      #    # 404 Error file for the static website
+      #    error-file: index.html
