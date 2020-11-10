@@ -1,4 +1,4 @@
-# mpo-module-demo
+# demo-module-mpo
 
 ## Project setup
 ```
