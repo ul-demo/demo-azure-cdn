@@ -24,14 +24,30 @@ jobs:
         with:
           node-version: 12.x
 
-      - name: install
+      - name: Install
         run: npm ci
 
-      - name: build
+      - name: Build
         run: npm run build
 
-      - name: test
+      - name: Exécution des tests
         run: npm run test:unit
+
+      # - name: Deploy
+      #   uses: tibor19/static-website-deploy@v1
+      #   with:
+      #     # Connection String of the Azure Storage Container
+      #     connection-string: ${{ secrets.DEPLOY_STSTORAGECONNECTIONSTRING }}
+      #     folder: dist
+      #     blob-container-name: $web
+      
+      - name: Deploiement
+        uses: LanceMcCarthy/Action-AzureBlobUpload@v1.7.1
+        with:
+          connection_string: ${{ secrets.DEV_ST_CONNECTION_STRING }}
+          container_name: $web
+          source_folder: dist/
+          #destination_folder: ${{ github.repository }}/${{ env.GITHUB_REF_SLUG_URL }}
 
       - name: Publication rapports de tests
         uses: LanceMcCarthy/Action-AzureBlobUpload@v1.7.1
@@ -41,15 +57,3 @@ jobs:
           container_name: $web
           source_folder: reports/
           destination_folder: ${{ github.repository }}/${{ env.GITHUB_REF_SLUG_URL }}
-
-      #- name: Deploy
-      #  uses: tibor19/static-website-deploy@v1
-      #  with:
-      #    # Connection String of the Azure Storage Container
-      #    connection-string: ${{ secrets.DEPLOY_STSTORAGECONNECTIONSTRING }}
-      #    folder: dist
-      #    blob-container-name: $web
-      #    # Index file for the static website
-      #    index-file: index.html
-      #    # 404 Error file for the static website
-      #    error-file: index.html
