@@ -1,0 +1,41 @@
+name: Promote to prod
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          ref: prod
+
+      - name: Fetch app
+        run: git fetch origin app
+
+      - name: Merge Fast-Forward 
+        run: git merge --ff refs/remotes/origin/app
+      
+      - name: Push changes
+        run: git push
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v1
+        with:
+          node-version: 12.x
+
+      - name: Install
+        run: npm ci
+
+      - name: Build
+        run: npm run build
+
+      - name: Deploiement
+        uses: LanceMcCarthy/Action-AzureBlobUpload@v1.7.1
+        with:
+          connection_string: ${{ secrets.PROD_ST_CONNECTION_STRING }}
+          container_name: $web
+          source_folder: dist/
