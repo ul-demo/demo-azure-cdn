@@ -1,4 +1,4 @@
-# demo-module-mpo
+# demo-azure-cdn
 
 ## Project setup
 ```
