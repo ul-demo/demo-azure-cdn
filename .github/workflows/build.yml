@@ -2,7 +2,7 @@ name: Build
 
 on:
   push:
-    branches: [main]
+    branches: ["main", "features/*"]
   pull_request:
     branches: [main]
   workflow_dispatch:
@@ -15,6 +15,15 @@ jobs:
       # Pour avoir accès à des variables plus simples comme GITHUB_REF_SLUG_URL
       - name: GitHub Slug Action
         uses: rlespinasse/github-slug-action@3.1.0
+
+      - name: Set variables
+        run: |
+          echo ${GITHUB_REF_SLUG}
+          if [[ "${GITHUB_REF_SLUG}" == features* ]]; then
+            echo "DESTINATION_FOLDER=${GITHUB_REF_SLUG}" >> $GITHUB_ENV
+          else 
+            echo "DESTINATION_FOLDER=/" >> $GITHUB_ENV
+          fi
 
       - name: Checkout
         uses: actions/checkout@v2
@@ -39,6 +48,7 @@ jobs:
           connection_string: ${{ secrets.DEV_ST_CONNECTION_STRING }}
           container_name: $web
           source_folder: dist/
+          destination_folder: ${{ env.DESTINATION_FOLDER }}
 
       - name: Publication rapports de tests
         uses: LanceMcCarthy/Action-AzureBlobUpload@v1.7.1
