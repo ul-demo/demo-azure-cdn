@@ -8,32 +8,24 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout
-        uses: actions/checkout@v2
+      - name: Download latest build from main branch
+        uses: fixpoint/azblob-download-artifact@v3
         with:
-          ref: app
+          connection-string: ${{ secrets.APP_ST_CONNECTION_STRING }}
+          container: artifacts
+          name: main
+          path: dist
 
-      - name: Fetch main
-        run: git fetch origin main
-
-      - name: Merge Fast-Forward 
-        run: git merge --ff refs/remotes/origin/main
-      
-      - name: Push changes
-        run: git push
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v1
+      - name: Upload current build
+        uses: fixpoint/azblob-upload-artifact@v4
         with:
-          node-version: 12.x
+          connection-string: ${{ secrets.APP_ST_CONNECTION_STRING }}
+          container: artifacts
+          cleanup: true
+          name: app
+          path: dist
 
-      - name: Install
-        run: npm ci
-
-      - name: Build
-        run: npm run build
-
-      - name: Deploiement
+      - name: Deploy current build
         uses: LanceMcCarthy/Action-AzureBlobUpload@v1.7.1
         with:
           connection_string: ${{ secrets.APP_ST_CONNECTION_STRING }}

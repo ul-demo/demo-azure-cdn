@@ -42,17 +42,16 @@ jobs:
       - name: Exécution des tests
         run: npm run test:unit
 
-      - name: Package artifact
-        run: mkdir target && tar --strip-components 1 -cvzf target/${{ env.GITHUB_REF_SLUG_URL }}.tgz dist
-
-      - name: Push artifact
-        uses: LanceMcCarthy/Action-AzureBlobUpload@v1.7.1
+      - name: Upload current build
+        uses: fixpoint/azblob-upload-artifact@v4
         with:
-          connection_string: ${{ secrets.APP_ST_CONNECTION_STRING }}
-          container_name: artifacts
-          source_folder: target/
+          connection-string: ${{ secrets.APP_ST_CONNECTION_STRING }}
+          container: artifacts
+          cleanup: true
+          name: ${{ env.GITHUB_REF_SLUG_URL }}
+          path: dist
 
-      - name: Deploiement
+      - name: Deploy current build
         uses: LanceMcCarthy/Action-AzureBlobUpload@v1.7.1
         with:
           connection_string: ${{ secrets.DEV_ST_CONNECTION_STRING }}
