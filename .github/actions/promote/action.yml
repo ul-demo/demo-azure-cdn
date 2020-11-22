@@ -15,12 +15,12 @@ runs:
   using: "composite"
   steps:
     - name: Download latest build from ${{ inputs.src }}
-        uses: fixpoint/azblob-download-artifact@v3
-        with:
-          connection-string: ${{ secrets.APP_ST_CONNECTION_STRING }}
-          container: artifacts
-          name: ${{ inputs.src }}
-          path: dist
+      uses: fixpoint/azblob-download-artifact@v3
+      with:
+        connection-string: ${{ secrets.APP_ST_CONNECTION_STRING }}
+        container: artifacts
+        name: ${{ inputs.src }}
+        path: dist
 
     - name: Upload current build
       uses: fixpoint/azblob-upload-artifact@v4
