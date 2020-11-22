@@ -11,9 +11,26 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
 
-      - name: Promote to approbation
-        uses: ./.github/actions/promote
+      - name: Download latest build from main
+        uses: fixpoint/azblob-download-artifact@v3
         with:
-          src: main
-          dest: app
-          dest-connection-string: secrets.APP_ST_CONNECTION_STRING
+          connection-string: ${{ secrets.APP_ST_CONNECTION_STRING }}
+          container: artifacts
+          name: main
+          path: dist
+
+      - name: Upload current build
+        uses: fixpoint/azblob-upload-artifact@v4
+        with:
+          connection-string: ${{ secrets.APP_ST_CONNECTION_STRING }}
+          container: artifacts
+          cleanup: true
+          name: app
+          path: dist
+
+      - name: Deploy current build
+        uses: LanceMcCarthy/Action-AzureBlobUpload@v1.7.1
+        with:
+          connection_string: ${{ secrets.APP_ST_CONNECTION_STRING }}
+          container_name: $web
+          source_folder: dist/
