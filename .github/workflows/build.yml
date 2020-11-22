@@ -21,7 +21,7 @@ jobs:
           echo ${GITHUB_REF_SLUG}
           if [[ "${GITHUB_REF_SLUG}" == features* ]]; then
             echo "DESTINATION_FOLDER=/${GITHUB_REF_SLUG}" >> $GITHUB_ENV
-          else 
+          else
             echo "DESTINATION_FOLDER=/" >> $GITHUB_ENV
           fi
 
@@ -41,6 +41,16 @@ jobs:
 
       - name: Exécution des tests
         run: npm run test:unit
+
+      - name: Package artifact
+        run: mkdir target && tar --strip-components 1 -cvzf target/${{ env.GITHUB_REF_SLUG_URL }}.tgz dist
+
+      - name: Push artifact
+        uses: LanceMcCarthy/Action-AzureBlobUpload@v1.7.1
+        with:
+          connection_string: ${{ secrets.APP_ST_CONNECTION_STRING }}
+          container_name: artifacts
+          source_folder: target/
 
       - name: Deploiement
         uses: LanceMcCarthy/Action-AzureBlobUpload@v1.7.1
