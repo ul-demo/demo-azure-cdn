@@ -17,7 +17,10 @@ jobs:
           connection-string: ${{ secrets.APP_ST_CONNECTION_STRING }}
           container: artifacts
           name: app
-          path: dist
+          path: target
+
+      - name: Unpack build
+        run: tar -zxvf target/package.tgz
 
       - name: Upload current build
         uses: fixpoint/azblob-upload-artifact@v4
@@ -26,7 +29,7 @@ jobs:
           container: artifacts
           cleanup: true
           name: prod
-          path: dist
+          path: target
 
       - name: Deploy current build
         uses: LanceMcCarthy/Action-AzureBlobUpload@v1.7.1
