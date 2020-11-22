@@ -33,13 +33,13 @@ jobs:
         with:
           node-version: 12.x
 
-      - name: Install
+      - name: npm ci
         run: npm ci
 
-      - name: Build
+      - name: npm run build
         run: npm run build
 
-      - name: Exécution des tests
+      - name: npm run test:unit
         run: npm run test:unit
 
       - name: Upload current build

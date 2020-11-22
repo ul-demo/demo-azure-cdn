@@ -1,0 +1,39 @@
+name: "Promote"
+description: "Permet de faire la promotion d'un build d'un environnement à un autre"
+inputs:
+  src:
+    description: "Nom de l'environnement source"
+    required: true
+  dest:
+    description: "Nom de l'environnement destination"
+    required: true
+  dest-connection-string:
+    description: "Connection string du stockage azure de l'environnement de destination"
+    required: true
+
+runs:
+  using: "composite"
+  steps:
+    - name: Download latest build from ${{ inputs.src }}
+        uses: fixpoint/azblob-download-artifact@v3
+        with:
+          connection-string: ${{ secrets.APP_ST_CONNECTION_STRING }}
+          container: artifacts
+          name: ${{ inputs.src }}
+          path: dist
+
+    - name: Upload current build
+      uses: fixpoint/azblob-upload-artifact@v4
+      with:
+        connection-string: ${{ secrets.APP_ST_CONNECTION_STRING }}
+        container: artifacts
+        cleanup: true
+        name: ${{ inputs.dest }}
+        path: dist
+
+    - name: Deploy current build
+      uses: LanceMcCarthy/Action-AzureBlobUpload@v1.7.1
+      with:
+        connection_string: ${{ inputs.dest-connection-string }}
+        container_name: $web
+        source_folder: dist/
