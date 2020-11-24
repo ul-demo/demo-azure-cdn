@@ -10,6 +10,9 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2
+        with:
+          ref: develop
+          fetch-depth: 100
 
       - name: Download latest build from develop
         uses: fixpoint/azblob-download-artifact@v3
