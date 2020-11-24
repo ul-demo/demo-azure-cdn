@@ -19,10 +19,10 @@ jobs:
       - name: Set variables
         run: |
           echo ${GITHUB_REF_SLUG}
-          if [[ "${GITHUB_REF_SLUG}" == features* ]]; then
-            echo "DESTINATION_FOLDER=/${GITHUB_REF_SLUG}" >> $GITHUB_ENV
-          else
+          if [[ "${GITHUB_REF_SLUG}" == develop ]]; then
             echo "DESTINATION_FOLDER=/" >> $GITHUB_ENV
+          else
+            echo "DESTINATION_FOLDER=/${GITHUB_REF_SLUG}" >> $GITHUB_ENV
           fi
 
       - name: Checkout

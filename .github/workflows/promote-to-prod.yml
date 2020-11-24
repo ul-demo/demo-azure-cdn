@@ -20,7 +20,17 @@ jobs:
           path: target
 
       - name: Unpack build
-        run: tar -zxvf target/package.tgz
+        run: |
+          tar -zxvf target/package.tgz
+          commit_sha=$(cat dist/commit)
+          echo Current commit is: $commit_sha
+          echo "COMMIT_SHA=${commit_sha}" >> $GITHUB_ENV
+
+      - name: Create tag
+        run: |
+          tagName=v`date +"%Y-%m-%d-%H-%M-%S"`
+          git tag -m "Release to prod" -f $tagName ${{ env.COMMIT_SHA }}
+          git push origin $tagName
 
       - name: Upload current build
         uses: fixpoint/azblob-upload-artifact@v4
