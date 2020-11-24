@@ -47,6 +47,8 @@ jobs:
 
       - name: Create tag
         run: |
+          git config user.email "github@ulaval.ca"
+          git config user.name "Github actions"
           tagName=v`date +"%Y-%m-%d-%H-%M-%S"`
           git tag -m "Release to prod" -f $tagName ${{ env.COMMIT_SHA }}
           git push origin $tagName
