@@ -33,7 +33,7 @@ jobs:
         run: |
           git fetch origin main --depth=1
           git fetch origin ${{ env.COMMIT_SHA }}:refs/remotes/origin/main
-          git push refs/remotes/origin/main
+          git push origin refs/remotes/origin/main
 
       - name: Upload current build
         uses: fixpoint/azblob-upload-artifact@v4
