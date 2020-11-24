@@ -18,7 +18,6 @@ jobs:
 
       - name: Set variables
         run: |
-          echo ${GITHUB_REF_SLUG}
           if [[ "${GITHUB_REF_SLUG}" == main ]]; then
             echo "DESTINATION_FOLDER=/" >> $GITHUB_ENV
             echo "CONNECTION_STRING=${{ secrets.APP_ST_CONNECTION_STRING }}" >> $GITHUB_ENV
@@ -64,7 +63,7 @@ jobs:
       - name: Deploy current build
         uses: LanceMcCarthy/Action-AzureBlobUpload@v1.7.1
         with:
-          connection_string: ${{ secrets[env.CONNECTION_STRING] }}
+          connection_string: ${{ env.CONNECTION_STRING }}
           container_name: $web
           source_folder: dist/
           destination_folder: ${{ env.DESTINATION_FOLDER }}
