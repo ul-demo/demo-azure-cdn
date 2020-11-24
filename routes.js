@@ -1,6 +1,9 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
+// Petit script permettant de copier le fichier index.html dans une arborescence de dossier
+// afin de supporter la navigation correctement
 const fs = require("fs");
 
+// Populer la liste des URLs à supporter ici
 const routes = ["/about", "/test"];
 
 if (!fs.existsSync("./dist/index.html")) {

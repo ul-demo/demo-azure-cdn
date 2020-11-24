@@ -39,6 +39,8 @@ jobs:
       - name: npm run build
         run: npm run build
 
+      - run: echo ${{ github.sha }} > dist/commit
+
       - name: npm run test:unit
         run: npm run test:unit
 
