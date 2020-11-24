@@ -41,9 +41,9 @@ jobs:
         run: npm ci
 
       - name: npm run build
-        run: npm run build
-
-      - run: echo ${{ github.sha }} > dist/commit
+        run: |
+          npm run build
+          echo ${{ github.sha }} > dist/commit
 
       - name: npm run test:unit
         run: npm run test:unit
