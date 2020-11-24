@@ -10,6 +10,9 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2
+        with:
+          ref: main
+          fetch-depth: 5
 
       - name: Download latest build from app
         uses: fixpoint/azblob-download-artifact@v3
@@ -26,12 +29,6 @@ jobs:
           echo Current commit is: $commit_sha
           echo "COMMIT_SHA=${commit_sha}" >> $GITHUB_ENV
 
-      - name: Create tag
-        run: |
-          tagName=v`date +"%Y-%m-%d-%H-%M-%S"`
-          git tag -m "Release to prod" -f $tagName ${{ env.COMMIT_SHA }}
-          git push origin $tagName
-
       - name: Upload current build
         uses: fixpoint/azblob-upload-artifact@v4
         with:
@@ -47,3 +44,9 @@ jobs:
           connection_string: ${{ secrets.PROD_ST_CONNECTION_STRING }}
           container_name: $web
           source_folder: dist/
+
+      - name: Create tag
+        run: |
+          tagName=v`date +"%Y-%m-%d-%H-%M-%S"`
+          git tag -m "Release to prod" -f $tagName ${{ env.COMMIT_SHA }}
+          git push origin $tagName
