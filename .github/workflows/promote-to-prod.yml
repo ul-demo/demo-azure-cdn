@@ -34,13 +34,6 @@ jobs:
           echo Current commit is: $commit_sha
           echo "COMMIT_SHA=${commit_sha}" >> $GITHUB_ENV
 
-      - name: Create tag
-        run: |
-          git config user.email "github@ulaval.ca"
-          git config user.name "Github actions"
-          git tag -m "Release to prod" -f ${{ env.TAG_NAME }} ${{ env.COMMIT_SHA }}
-          git push origin ${{ env.TAG_NAME }}
-
       - name: Upload current build
         uses: fixpoint/azblob-upload-artifact@v4
         with:
@@ -49,6 +42,13 @@ jobs:
           cleanup: true
           name: ${{ env.TAG_NAME }}
           path: target
+
+      - name: Create tag
+        run: |
+          git config user.email "github@ulaval.ca"
+          git config user.name "Github actions"
+          git tag -m "Release to prod" -f ${{ env.TAG_NAME }} ${{ env.COMMIT_SHA }}
+          git push origin ${{ env.TAG_NAME }}
 
       - name: Deploy current build
         uses: LanceMcCarthy/Action-AzureBlobUpload@v1.7.1

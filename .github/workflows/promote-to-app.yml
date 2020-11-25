@@ -21,29 +21,27 @@ jobs:
           name: develop
           path: target
 
-      - name: Unpack build
+      - name: Unpack latest build
         run: |
           tar -zxvf target/package.tgz
           commit_sha=$(cat dist/commit)
           echo Current commit is: $commit_sha
           echo "COMMIT_SHA=${commit_sha}" >> $GITHUB_ENV
 
-      - name: Merge Fast-Forward to develop
+      - name: Merge Fast-Forward to latest build commit
         run: |
           git fetch origin ${{ env.COMMIT_SHA }}:develop_tmp
           git merge --ff develop_tmp
+          git push origin main
 
-      - name: Deploy current build
+      - name: Deploy latest build
         uses: LanceMcCarthy/Action-AzureBlobUpload@v1.7.1
         with:
           connection_string: ${{ secrets.APP_ST_CONNECTION_STRING }}
           container_name: $web
           source_folder: dist/
 
-      - name: Push changes
-        run: git push origin main
-
-      - name: Upload current build
+      - name: Upload latest build as app
         uses: fixpoint/azblob-upload-artifact@v4
         with:
           connection-string: ${{ secrets.APP_ST_CONNECTION_STRING }}
