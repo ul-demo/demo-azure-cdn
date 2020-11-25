@@ -11,8 +11,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
         with:
-          ref: develop
-          fetch-depth: 100
+          ref: main
 
       - name: Download latest build from develop
         uses: fixpoint/azblob-download-artifact@v3
@@ -29,16 +28,20 @@ jobs:
           echo Current commit is: $commit_sha
           echo "COMMIT_SHA=${commit_sha}" >> $GITHUB_ENV
 
-      - name: Merge forward main branch
+      - name: Merge Fast-Forward to develop
         run: |
-          echo "Fetching last commit of main branch..."
-          git fetch origin main:main_tmp --depth=1
+          git fetch origin ${{ env.COMMIT_SHA }}:develop_tmp
+          git merge --ff develop_tmp
 
-          echo "Forwarding main branch..."
-          git fetch origin ${{ env.COMMIT_SHA }}:main_tmp
+      - name: Deploy current build
+        uses: LanceMcCarthy/Action-AzureBlobUpload@v1.7.1
+        with:
+          connection_string: ${{ secrets.APP_ST_CONNECTION_STRING }}
+          container_name: $web
+          source_folder: dist/
 
-          echo "Pushing changes..."
-          git push origin main_tmp:main
+      - name: Push changes
+        run: git push origin main
 
       - name: Upload current build
         uses: fixpoint/azblob-upload-artifact@v4
@@ -48,10 +51,3 @@ jobs:
           cleanup: true
           name: app
           path: target
-
-      - name: Deploy current build
-        uses: LanceMcCarthy/Action-AzureBlobUpload@v1.7.1
-        with:
-          connection_string: ${{ secrets.APP_ST_CONNECTION_STRING }}
-          container_name: $web
-          source_folder: dist/
