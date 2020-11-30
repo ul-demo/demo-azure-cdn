@@ -2,7 +2,7 @@
   <div class="home">
     <img alt="Vue logo" src="../assets/logo.png" />
     <HelloWorld
-      msg="Bienvenue à cette démo de Azure CDN, Pulumi et Github :')"
+      msg="Bienvenue à cette démo de Azure CDN, Pulumi et Github :')))"
     />
   </div>
 </template>
@@ -13,8 +13,8 @@ import HelloWorld from "@/components/HelloWorld.vue"; // @ is an alias to /src
 
 @Component({
   components: {
-    HelloWorld,
-  },
+    HelloWorld
+  }
 })
 export default class Home extends Vue {}
 </script>
