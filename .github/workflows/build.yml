@@ -69,7 +69,7 @@ jobs:
           blob_directory: ${{ env.DESTINATION_FOLDER }}
           local_directory: dist
           http_headers: |
-            - glob: "**/*.??????.*"
+            - glob: "**/*.????????.*"
               headers:
                 Cache-Control: public, max-age=604800, immutable
 
@@ -78,10 +78,11 @@ jobs:
                 Cache-Control: public, max-age=120, s-maxage=180, proxy-revalidate
 
       - name: Publication rapports de tests
-        uses: LanceMcCarthy/Action-AzureBlobUpload@v1.7.1
+        uses: ulaval/azure-blob-copy-action@main
         if: ${{ success() || failure() }}
         with:
+          action: upload
           connection_string: ${{ secrets.REPORTS_ST_CONNECTION_STRING }}
           container_name: $web
-          source_folder: reports/
-          destination_folder: ${{ github.repository }}/${{ env.GITHUB_REF_SLUG_URL }}
+          blob_directory: ${{ github.repository }}/${{ env.GITHUB_REF_SLUG_URL }}
+          local_directory: reports
