@@ -60,13 +60,22 @@ jobs:
           path: target
           cleanup: true
 
-      - name: Deploy current build
-        uses: LanceMcCarthy/Action-AzureBlobUpload@v1.7.1
+      - name: Deploy application
+        uses: ulaval/azure-blob-copy-action@main
         with:
+          action: upload
           connection_string: ${{ env.CONNECTION_STRING }}
           container_name: $web
-          source_folder: dist/
-          destination_folder: ${{ env.DESTINATION_FOLDER }}
+          blob_directory: ${{ env.DESTINATION_FOLDER }}
+          local_directory: dist
+          http_headers: |
+            - glob: "**/*.??????.*"
+              headers:
+                Cache-Control: public, max-age=604800, immutable
+
+            - glob: "**/*"
+              headers:
+                Cache-Control: public, max-age=120, s-maxage=180, proxy-revalidate
 
       - name: Publication rapports de tests
         uses: LanceMcCarthy/Action-AzureBlobUpload@v1.7.1
