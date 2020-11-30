@@ -50,9 +50,18 @@ jobs:
           git tag -m "Release to prod" -f ${{ env.TAG_NAME }} ${{ env.COMMIT_SHA }}
           git push origin ${{ env.TAG_NAME }}
 
-      - name: Deploy current build
-        uses: LanceMcCarthy/Action-AzureBlobUpload@v1.7.1
+      - name: Deploy application
+        uses: ulaval/azure-blob-copy-action@main
         with:
+          action: upload
           connection_string: ${{ secrets.PROD_ST_CONNECTION_STRING }}
           container_name: $web
-          source_folder: dist/
+          local_directory: dist
+          http_headers: |
+            - glob: "**/*.????????.*"
+              headers:
+                Cache-Control: public, max-age=604800, immutable
+
+            - glob: "**/*"
+              headers:
+                Cache-Control: public, max-age=120, s-maxage=180, proxy-revalidate
