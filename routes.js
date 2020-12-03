@@ -4,7 +4,7 @@
 const fs = require("fs");
 
 // Populer la liste des URLs à supporter ici
-const routes = ["/about", "/test"];
+const routes = ["/callback", "/logout", "/about", "/test"];
 
 if (!fs.existsSync("./dist/index.html")) {
   throw new Error("Le build ne semble pas avoir été exécuté");
