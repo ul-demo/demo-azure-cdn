@@ -3,15 +3,18 @@
     <div id="nav">
       <router-link to="/">Home</router-link> |
       <router-link to="/about">About</router-link> |
-      <button v-if="!securityCtx.account" @click="$emit('ouvrir-session')">
+      <button
+        v-if="!securityCtx.authenticated"
+        @click="$emit('ouvrir-session')"
+      >
         Ouvrir une session
       </button>
-      <span v-if="!!securityCtx.account"
-        >Bonjour {{ securityCtx.account.name }}</span
+      <span v-if="securityCtx.authenticated"
+        >Bonjour {{ securityCtx.nickName }} |
+        <button @click="$emit('fermer-session')">
+          Logout
+        </button></span
       >
-      <button v-if="!!securityCtx.account" @click="$emit('fermer-session')">
-        Logout
-      </button>
     </div>
     <router-view />
   </div>
