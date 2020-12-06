@@ -1,5 +1,6 @@
 import {
   AccountInfo,
+  AuthenticationResult,
   Configuration,
   PublicClientApplication
 } from "@azure/msal-browser";
@@ -24,9 +25,45 @@ const msalConfig: Configuration = {
 
 const msalInstance = new PublicClientApplication(msalConfig);
 
-const securityCtx = {
-  account: null
-} as { account: AccountInfo | string | null };
+interface SecurityCtx {
+  account: AccountInfo | string | null;
+  hasDevopsRole: boolean;
+}
+
+const securityCtx: SecurityCtx = {
+  account: null,
+  hasDevopsRole: false
+};
+
+type IdTokenClaims = { roles?: string[] };
+
+function updateSecurityCtx(result: AuthenticationResult): void {
+  const roles = (result.idTokenClaims as IdTokenClaims).roles;
+
+  securityCtx.account = result.account;
+  securityCtx.hasDevopsRole = roles
+    ? roles.findIndex(role => role === "devops") >= 0
+    : false;
+  localStorage.setItem("login_hint", securityCtx.account.username);
+}
+
+async function login() {
+  msalInstance.loginRedirect({
+    scopes: ["openid"]
+  });
+  /*try {
+    const res = await msalInstance.loginPopup({
+      scopes: ["openid"]
+    });
+    updateSecurityCtx(res);
+  } catch (e) {
+    console.info(e);
+  }*/
+}
+
+async function logout() {
+  msalInstance.logout();
+}
 
 function bootVue() {
   Vue.config.productionTip = false;
@@ -42,37 +79,29 @@ function bootVue() {
       h(App, {
         on: {
           "ouvrir-session": async function() {
-            //msalInstance.loginRedirect();
-            try {
-              const res = await msalInstance.loginPopup();
-              securityCtx.account = res.account;
-              localStorage.setItem("login_hint", securityCtx.account.username);
-            } catch (e) {
-              console.info(e);
-            }
+            login();
           },
           "fermer-session": function() {
-            msalInstance.logout();
+            logout();
           }
         }
       })
   }).$mount("#app");
 }
 
-async function handleRedirect(): Promise<boolean> {
+async function tryHandleRedirect(): Promise<boolean> {
   const response = await msalInstance.handleRedirectPromise();
 
   if (response) {
-    securityCtx.account = response.account;
+    updateSecurityCtx(response);
     console.info("Redirect: " + securityCtx.account);
-    localStorage.setItem("login_hint", securityCtx.account.username);
     return true;
   }
 
   return false;
 }
 
-async function trySilent() {
+async function trySilentLogin() {
   const loginHint = localStorage.getItem("login_hint");
 
   if (loginHint) {
@@ -82,30 +111,51 @@ async function trySilent() {
         loginHint
       });
       console.info("Silent worked.");
-      securityCtx.account = res.account;
+      updateSecurityCtx(res);
     } catch (e) {
       console.warn(e);
     }
   }
 }
 
+async function tryLoginFromCache(): Promise<boolean> {
+  const accounts = msalInstance.getAllAccounts();
+
+  if (accounts && accounts.length > 0) {
+    try {
+      const res = await msalInstance.acquireTokenSilent({
+        account: accounts[0],
+        scopes: ["openid"]
+      });
+      updateSecurityCtx(res);
+      console.info("acquireTokenSilent worked");
+      return true;
+    } catch (e) {
+      console.warn(e);
+    }
+  }
+
+  return false;
+}
+
 async function boot() {
   try {
-    const accounts = msalInstance.getAllAccounts();
+    const workedFromCache = await tryLoginFromCache();
 
-    // Sommes-nous déjà authentifié ?
-    if (accounts && accounts.length > 0) {
-      securityCtx.account = accounts[0];
-    } else {
+    if (!workedFromCache) {
       // On doit traiter le cas du redirect
-      if (!(await handleRedirect())) {
+      const isRedirect = await tryHandleRedirect();
+
+      if (!isRedirect) {
         // Si on n'est pas dans une requête de redirect, on tente une authentification silencieuse
-        await trySilent();
+        await trySilentLogin();
       }
     }
+
+    // Inutile de démarrer l'application dans le cas d'une requête de type redirect
     bootVue();
   } catch (e) {
-    console.info(e);
+    console.warn(e);
   }
 }
 
