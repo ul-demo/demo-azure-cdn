@@ -51,6 +51,9 @@ export class SecurityCtxMsal implements SecurityCtx {
   }
 
   async logout() {
+    this.authenticated = false;
+    this.hasDevopsRole = false;
+    this.nickName = undefined;
     this.msalInstance.logout();
   }
 
@@ -127,14 +130,22 @@ export class SecurityCtxMsal implements SecurityCtx {
   }
 
   private onLogin(result: AuthenticationResult): void {
-    const roles = (result.idTokenClaims as IdTokenClaims).roles;
-
     this.authenticated = true;
     this.nickName = result.account.name;
-    this.hasDevopsRole = roles
-      ? roles.findIndex(role => role === "devops") >= 0
-      : false;
+    this.hasDevopsRole = SecurityCtxMsal.hasRole(result, "devops");
 
     localStorage.setItem("login_hint", result.account.username);
+  }
+
+  private static hasRole(result: AuthenticationResult, role: string): boolean {
+    return (
+      SecurityCtxMsal.getRoles(result).findIndex(
+        currentRole => currentRole === role
+      ) >= 0
+    );
+  }
+
+  private static getRoles(result: AuthenticationResult): string[] {
+    return (result.idTokenClaims as IdTokenClaims).roles ?? [];
   }
 }

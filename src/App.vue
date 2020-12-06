@@ -9,12 +9,11 @@
       >
         Ouvrir une session
       </button>
-      <span v-if="securityCtx.authenticated"
-        >Bonjour {{ securityCtx.nickName }} |
-        <button @click="$emit('fermer-session')">
-          Logout
-        </button></span
-      >
+      <div v-if="securityCtx.authenticated" style="display: inline">
+        Bonjour {{ securityCtx.nickName }}
+        <span v-if="securityCtx.hasDevopsRole">(membre DevOps)</span> |
+        <button @click="$emit('fermer-session')">Logout</button>
+      </div>
     </div>
     <router-view />
   </div>
