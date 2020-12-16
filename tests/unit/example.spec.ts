@@ -7,6 +7,11 @@ describe("HelloWorld.vue", () => {
     const msg = "new message";
     const wrapper = shallowMount(HelloWorld, {
       propsData: { msg },
+      mocks: {
+        toggles: {
+          superFeature: true,
+        },
+      },
     });
     expect(wrapper.text()).toMatch(msg);
   });

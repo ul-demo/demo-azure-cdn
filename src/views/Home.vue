@@ -1,11 +1,7 @@
 <template>
   <div class="home">
-    <img
-      alt="Vue logo"
-      src="../assets/logo.png"
-    >
     <HelloWorld
-      msg="Bienvenue à cette démo de Azure CDN, Pulumi et Github :')))"
+      msg="Bienvenue à cette démo de Azure, Pulumi et Github :')))"
     />
   </div>
 </template>

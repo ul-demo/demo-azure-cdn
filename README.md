@@ -22,7 +22,7 @@ npm run test:unit
 
 ### Lints and fixes files
 ```
-npm run lint
+npm run eslint
 ```
 
 ### Customize configuration
