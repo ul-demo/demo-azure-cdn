@@ -7,6 +7,8 @@ jobs:
   promote:
     runs-on: ubuntu-latest
 
+    environment: prod
+
     steps:
       - name: Checkout
         uses: actions/checkout@v2
@@ -54,7 +56,7 @@ jobs:
         uses: ulaval/azure-blob-copy-action@main
         with:
           action: upload
-          connection_string: ${{ secrets.PROD_ST_CONNECTION_STRING }}
+          connection_string: ${{ secrets.ST_CONNECTION_STRING }}
           container_name: $web
           local_directory: dist
           http_headers: |
