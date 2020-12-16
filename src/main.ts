@@ -1,4 +1,5 @@
 import Vue from "vue";
+
 import App from "./App.vue";
 import router from "./router";
 import { MsalConfig, SecurityCtxMsal } from "./security";
@@ -16,13 +17,13 @@ const msalConfig: MsalConfig = {
     clientId,
     authority: `https://login.microsoftonline.com/${tenantId}`,
     redirectUri: window.location.origin + "/callback",
-    postLogoutRedirectUri: window.location.origin
+    postLogoutRedirectUri: window.location.origin,
   },
   cache: {
     cacheLocation: "sessionStorage",
-    storeAuthStateInCookie: false
+    storeAuthStateInCookie: false,
   },
-  loginType: "popup"
+  loginType: "popup",
 };
 
 async function bootVue() {
@@ -37,19 +38,19 @@ async function bootVue() {
   new Vue({
     router,
     data: {
-      securityCtx
+      securityCtx,
     },
     render: h =>
       h(App, {
         on: {
-          "ouvrir-session": async function() {
+          "ouvrir-session": async function () {
             securityCtx.login();
           },
-          "fermer-session": function() {
+          "fermer-session": function () {
             securityCtx.logout();
-          }
-        }
-      })
+          },
+        },
+      }),
   }).$mount("#app");
 }
 

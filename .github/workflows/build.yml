@@ -46,16 +46,20 @@ jobs:
             ~/.npm
           key: ${{ runner.os }}-npm-${{ hashFiles('**/package*.json') }}
 
-      - name: npm ci
+      - name: Run npm ci
         if: steps.restoreNodeModules.outputs.cache-hit != 'true'
         run: npm ci --prefer-offline &> /dev/null
 
-      - name: npm run build
+      - name: Run eslint
+        run: |
+          npm run eslint
+
+      - name: Run build
         run: |
           npm run build
           echo ${{ github.sha }} > dist/commit
 
-      - name: npm run test:unit
+      - name: Run unit tests
         run: npm run test:unit
 
       - name: Package build
@@ -87,7 +91,7 @@ jobs:
               headers:
                 Cache-Control: public, max-age=120, s-maxage=180, proxy-revalidate
 
-      - name: Publication rapports de tests
+      - name: Publish test reports
         uses: ulaval/azure-blob-copy-action@main
         if: ${{ success() || failure() }}
         with:

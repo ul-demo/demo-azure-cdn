@@ -1,7 +1,7 @@
 import {
   AuthenticationResult,
   Configuration,
-  PublicClientApplication
+  PublicClientApplication,
 } from "@azure/msal-browser";
 
 export interface SecurityCtx {
@@ -39,7 +39,7 @@ export class SecurityCtxMsal implements SecurityCtx {
 
   async login(): Promise<void> {
     const request = {
-      scopes: ["openid"]
+      scopes: ["openid"],
     };
 
     if (this.config.loginType === "redirect") {
@@ -50,7 +50,7 @@ export class SecurityCtxMsal implements SecurityCtx {
     }
   }
 
-  async logout() {
+  async logout(): Promise<void> {
     this.authenticated = false;
     this.hasDevopsRole = false;
     this.nickName = undefined;
@@ -60,7 +60,7 @@ export class SecurityCtxMsal implements SecurityCtx {
   /**
    * Permet de charger l'information sur l'utilisateur courant.
    */
-  async load() {
+  async load(): Promise<void> {
     (await _try(() => this.loadFromCache())) ||
       (await _try(() => this.loadFromRedirect())) ||
       (await _try(() => this.loadSilent()));
@@ -80,7 +80,7 @@ export class SecurityCtxMsal implements SecurityCtx {
     console.debug("Trying to load idToken from cache...");
     const res = await this.msalInstance.acquireTokenSilent({
       account: accounts[0],
-      scopes: ["openid"]
+      scopes: ["openid"],
     });
     console.debug("Load idToken from cache worked.");
     this.onLogin(res);
@@ -122,7 +122,7 @@ export class SecurityCtxMsal implements SecurityCtx {
 
     console.debug("Trying silent login...");
     const res = await this.msalInstance.ssoSilent({
-      loginHint
+      loginHint,
     });
     console.debug("Silent login worked.");
     this.onLogin(res);
@@ -140,7 +140,7 @@ export class SecurityCtxMsal implements SecurityCtx {
   private static hasRole(result: AuthenticationResult, role: string): boolean {
     return (
       SecurityCtxMsal.getRoles(result).findIndex(
-        currentRole => currentRole === role
+        currentRole => currentRole === role,
       ) >= 0
     );
   }

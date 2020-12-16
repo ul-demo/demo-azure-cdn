@@ -1,18 +1,27 @@
 <template>
   <div id="app">
     <div id="nav">
-      <router-link to="/">Home</router-link> |
-      <router-link to="/about">About</router-link> |
+      <router-link to="/">
+        Home
+      </router-link> |
+      <router-link to="/about">
+        About
+      </router-link> |
       <button
         v-if="!securityCtx.authenticated"
         @click="$emit('ouvrir-session')"
       >
         Ouvrir une session
       </button>
-      <div v-if="securityCtx.authenticated" style="display: inline">
+      <div
+        v-if="securityCtx.authenticated"
+        style="display: inline"
+      >
         Bonjour {{ securityCtx.nickName }}
         <span v-if="securityCtx.hasDevopsRole">(membre DevOps)</span> |
-        <button @click="$emit('fermer-session')">Logout</button>
+        <button @click="$emit('fermer-session')">
+          Logout
+        </button>
       </div>
     </div>
     <router-view />

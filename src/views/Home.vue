@@ -1,6 +1,9 @@
 <template>
   <div class="home">
-    <img alt="Vue logo" src="../assets/logo.png" />
+    <img
+      alt="Vue logo"
+      src="../assets/logo.png"
+    >
     <HelloWorld
       msg="Bienvenue à cette démo de Azure CDN, Pulumi et Github :')))"
     />
@@ -9,12 +12,13 @@
 
 <script lang="ts">
 import { Component, Vue } from "vue-property-decorator";
+
 import HelloWorld from "@/components/HelloWorld.vue"; // @ is an alias to /src
 
 @Component({
   components: {
-    HelloWorld
-  }
+    HelloWorld,
+  },
 })
 export default class Home extends Vue {}
 </script>
