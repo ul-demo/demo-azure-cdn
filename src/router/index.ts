@@ -1,6 +1,7 @@
 import Vue from "vue";
 import VueRouter, { RouteConfig } from "vue-router";
 
+import NotFound from "../components/NotFound.vue";
 import Home from "../views/Home.vue";
 
 Vue.use(VueRouter);
@@ -19,6 +20,11 @@ const routes: Array<RouteConfig> = [
     // which is lazy-loaded when the route is visited.
     component: () =>
       import(/* webpackChunkName: "about" */ "../views/About.vue"),
+  },
+  {
+    path: "*",
+    name: "404",
+    component: NotFound,
   },
 ];
 
