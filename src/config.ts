@@ -8,9 +8,10 @@ export interface Config {
 }
 
 export function createMainConfig(): Config {
+  const isProd = window.location.host.indexOf("prod") >= 0 || window.location.host.indexOf("ulaval.ca") >= 0;
   const upToLocal = window.location.host.indexOf("localhost") >= 0;
-  const upToDev = upToLocal || window.location.host.indexOf("dev") >= 0;
-  const upToApp = upToDev || window.location.host.indexOf("app") >= 0;
+  const upToDev = !isProd && upToLocal || window.location.host.indexOf("dev") >= 0;
+  const upToApp = !isProd && upToDev || window.location.host.indexOf("app") >= 0;
 
   return {
     msal: {
