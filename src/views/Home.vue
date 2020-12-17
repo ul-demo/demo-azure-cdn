@@ -1,7 +1,7 @@
 <template>
   <div class="home">
     <HelloWorld
-      msg="Bienvenue à cette démo de Azure, Pulumi et Github :')"
+      msg="Bienvenue à cette démo de Azure, Pulumi et Github :')))"
     />
   </div>
 </template>
